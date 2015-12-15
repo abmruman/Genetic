@@ -9,96 +9,95 @@ enum {a,b,c,d,e,f,g,h};
 int x[IMAX][JMAX];
 int offSpring[IMAX][JMAX];
 int fitness[IMAX];
-int sortedIndex[IMAX];
+int fitnessOffspring[IMAX];
 
 void inputPopulation();
-void calculateFitnessOf(int (& )[IMAX][JMAX]);
-void printFitness();
-void printPopulation();
-void sortByFitness();
-void printOffspring();
+void calculateFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
+void printFitnessOf(int (& )[IMAX]);
+void print(int (& )[IMAX][JMAX]);
+void sortByFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
 void crossOverOnePoint(int, int, int);
+void crossOver();
 
 int main (){
     cout << "###################\n";
     inputPopulation();
-    printPopulation();
-    calculateFitnessOf(x);
-    printFitness();
+    print(x);
+    calculateFitnessOf(x, fitness);
+    printFitnessOf(fitness);
     cout << "###################\n";
     cout << "\n*** After sort: ***\n";
-    sortByFitness();
+    sortByFitnessOf(x, fitness);
     cout << "###################\n";
-    printPopulation();
-    printFitness();
+    print(x);
+    printFitnessOf(fitness);
     cout << "###################\n";
 
-    crossOverOnePoint(0, 1, 4);
-    crossOverOnePoint(2, 3, 4);
-    printOffspring();
+    cout << "\n** 1st generation **\n";
+    crossOver();
+    print(offSpring);
+    calculateFitnessOf(offSpring, fitnessOffspring);
+    printFitnessOf(fitnessOffspring);
+
     return 0;
 }
 
 void inline inputPopulation(){
     for (int i=0; i<IMAX; i++){
-        sortedIndex[i]=i;
         for (int j=0; j<JMAX; j++){
             cin >> x[i][j];
         }
     }
 }
 
-void inline printPopulation(){
-    cout << "Population: \n";
+void inline print(int (&arr)[IMAX][JMAX]){
     for (int i=0; i<IMAX; i++){
         cout  << "x"<< i+1 << ": ";
         for (int j=0; j<JMAX; j++){
-            cout << x[i][j] << " ";
+            cout << arr[i][j] << " ";
         }
         cout << endl;
     }
     cout << endl;
 }
 
-void calculateFitnessOf(int (&arr)[IMAX][JMAX]){
-    //int &X[][] = (name == PARENT) ? x : offSpring;
+void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
     for (int i=0; i<IMAX; i++){
-        fitness[i] =((arr[i][a] + arr[i][b])
+        fit[i] =((arr[i][a] + arr[i][b])
                      -(arr[i][c] + arr[i][d])
                      +(arr[i][e] + arr[i][f])
                      -(arr[i][g] + arr[i][h]));
     }
 }
 
-void printFitness(){
-    cout << "Fitness :\n";
+void printFitnessOf(int (&arr)[IMAX]){
     for (int i=0; i<IMAX; i++){
-        cout << "X"<<i+1<<": "<<fitness[i]<<endl;
+        cout << "X"<<i+1<<": "<<arr[i]<<endl;
     }
 }
 
-void sortByFitness(){
-    int temp, arr[JMAX];
+void sortByFitnessOf(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
+    int temp, tempArr[JMAX];
     for(int i=0; i<IMAX; i++){
-
         for(int j=0; j<IMAX; j++){
-            if(fitness[i]>fitness[j]){
-                temp = fitness[i];
-                fitness[i] = fitness[j];
-                fitness[j] = temp;
+            if(fit[i]>fit[j]){
+                temp = fit[i];
+                fit[i] = fit[j];
+                fit[j] = temp;
                 for(int t=0; t<JMAX; t++){
-                    arr[t]=x[i][t];
+                    tempArr[t]=arr[i][t];
                 }
                 for(int t=0; t<JMAX; t++){
-                    x[i][t] = x[j][t];
+                    arr[i][t] = arr[j][t];
                 }
                 for(int t=0; t<JMAX; t++){
-                    x[j][t] = arr[t];
+                    arr[j][t] = tempArr[t];
                 }
             }
         }
     }
 }
+
 void crossOverOnePoint(int a, int b, int pointer){
     for (int i= 0; i<pointer; i++){
         offSpring[a][i] = x[a][i];
@@ -110,16 +109,9 @@ void crossOverOnePoint(int a, int b, int pointer){
     }
 }
 
-
-void inline printOffspring(){
-    cout << "\nOffspting: \n";
-    for (int i=0; i<IMAX; i++){
-        cout  << "x"<< i+1 << ": ";
-        for (int j=0; j<JMAX; j++){
-            cout << offSpring[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl << endl;
+void crossOver(){
+    crossOverOnePoint(0, 1, 4);
+    crossOverOnePoint(2, 3, 4);
 }
+
 
