@@ -18,27 +18,36 @@ void print(int (& )[IMAX][JMAX]);
 void sortByFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
 void crossOverOnePoint(int, int, int);
 void crossOver();
+void chooseBest();
 
 int main (){
-    cout << "###################\n";
     inputPopulation();
-    print(x);
-    calculateFitnessOf(x, fitness);
-    printFitnessOf(fitness);
-    cout << "###################\n";
-    cout << "\n*** After sort: ***\n";
-    sortByFitnessOf(x, fitness);
-    cout << "###################\n";
-    print(x);
-    printFitnessOf(fitness);
-    cout << "###################\n";
+    for(int t=0; t<4;t++){
+        cout << "\n###################";
+        cout << "\n** Generation "<< t+1 <<" **\n";
+        cout << "###################\n";
+        cout << "\n*** Parents: ***\n";
+        print(x);
+        calculateFitnessOf(x, fitness);
+        printFitnessOf(fitness);
+        cout << "\n** After sort: **\n";
+        sortByFitnessOf(x, fitness);
+        print(x);
+        printFitnessOf(fitness);
+        crossOver();
+        calculateFitnessOf(offSpring, fitnessOffspring);
 
-    cout << "\n** 1st generation **\n";
-    crossOver();
-    print(offSpring);
-    calculateFitnessOf(offSpring, fitnessOffspring);
-    printFitnessOf(fitnessOffspring);
+        cout << "\n*** Offspring: ***\n";
+        print(offSpring);
+        printFitnessOf(fitnessOffspring);
+        sortByFitnessOf(offSpring, fitnessOffspring);
+        cout << "\n** After sort: **\n";
+        print(offSpring);
+        printFitnessOf(fitnessOffspring);
 
+        chooseBest();
+        cout << "###################\n";
+    }
     return 0;
 }
 
@@ -52,7 +61,7 @@ void inline inputPopulation(){
 
 void inline print(int (&arr)[IMAX][JMAX]){
     for (int i=0; i<IMAX; i++){
-        cout  << "x"<< i+1 << ": ";
+        cout  << i+1 << ": ";
         for (int j=0; j<JMAX; j++){
             cout << arr[i][j] << " ";
         }
@@ -71,8 +80,9 @@ void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
 }
 
 void printFitnessOf(int (&arr)[IMAX]){
+    cout<<"Fitness:\n";
     for (int i=0; i<IMAX; i++){
-        cout << "X"<<i+1<<": "<<arr[i]<<endl;
+        cout <<i+1<<": "<<arr[i]<<endl;
     }
 }
 
@@ -114,4 +124,10 @@ void crossOver(){
     crossOverOnePoint(2, 3, 4);
 }
 
+void chooseBest(){
+    for (int j=0; j<JMAX; j++){
+        x[2][j] = offSpring[0][j];
+        x[3][j] = offSpring[1][j];
+    }
+}
 
