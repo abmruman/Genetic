@@ -1,9 +1,9 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 #define IMAX 4
 #define JMAX 8
-#define PARENT 0
-#define OFFSPRING 1
 
 enum {a,b,c,d,e,f,g,h};
 int x[IMAX][JMAX];
@@ -19,6 +19,7 @@ void sortByFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
 void crossOverOnePoint(int, int, int);
 void crossOver();
 void chooseBest();
+void mutation(int (& )[IMAX][JMAX]);
 
 int main (){
     inputPopulation();
@@ -26,11 +27,11 @@ int main (){
         cout << "\n###################";
         cout << "\n** Generation "<< t+1 <<" **\n";
         cout << "###################\n";
-        cout << "\n*** Parents: ***\n";
+        cout << "\n***  Parents:  ***\n";
         print(x);
         calculateFitnessOf(x, fitness);
         printFitnessOf(fitness);
-        cout << "\n** After sort: **\n";
+        cout << "\n*   After sort:  *\n";
         sortByFitnessOf(x, fitness);
         print(x);
         printFitnessOf(fitness);
@@ -40,8 +41,16 @@ int main (){
         cout << "\n*** Offspring: ***\n";
         print(offSpring);
         printFitnessOf(fitnessOffspring);
+
+        cout << "\n*    Mutation:   *\n";
+        mutation(offSpring);
+        calculateFitnessOf(offSpring, fitnessOffspring);
+        print(offSpring);
+        printFitnessOf(fitnessOffspring);
+
+
         sortByFitnessOf(offSpring, fitnessOffspring);
-        cout << "\n** After sort: **\n";
+        cout << "\n*   After sort:  *\n";
         print(offSpring);
         printFitnessOf(fitnessOffspring);
 
@@ -51,7 +60,13 @@ int main (){
     return 0;
 }
 
-void inline inputPopulation(){
+inline int randNum(int min, int max){
+	double d = rand()/static_cast<double>(RAND_MAX);
+    int i = min + static_cast<int>( d * (max - min) );
+    return i;
+}
+
+inline void inputPopulation(){
     for (int i=0; i<IMAX; i++){
         for (int j=0; j<JMAX; j++){
             cin >> x[i][j];
@@ -60,6 +75,7 @@ void inline inputPopulation(){
 }
 
 void inline print(int (&arr)[IMAX][JMAX]){
+    cout << "   a b c d e f g h\n";
     for (int i=0; i<IMAX; i++){
         cout  << i+1 << ": ";
         for (int j=0; j<JMAX; j++){
@@ -80,7 +96,7 @@ void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
 }
 
 void printFitnessOf(int (&arr)[IMAX]){
-    cout<<"Fitness:\n";
+    cout<<"Fitness: f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n";
     for (int i=0; i<IMAX; i++){
         cout <<i+1<<": "<<arr[i]<<endl;
     }
@@ -128,6 +144,13 @@ void chooseBest(){
     for (int j=0; j<JMAX; j++){
         x[2][j] = offSpring[0][j];
         x[3][j] = offSpring[1][j];
+    }
+}
+
+void inline mutation(int (&arr)[IMAX][JMAX]){
+    for (int i=0; i<IMAX; i++){
+        arr[i][randNum(0,JMAX)] = randNum(0,9);
+
     }
 }
 
