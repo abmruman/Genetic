@@ -1,3 +1,8 @@
+/**
+ *
+ *  @author A B M RUMAN
+ *
+ **/
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -8,54 +13,48 @@ using namespace std;
 enum {a,b,c,d,e,f,g,h};
 int x[IMAX][JMAX];
 int offSpring[IMAX][JMAX];
-int fitness[IMAX];
+int fitnessParent[IMAX];
 int fitnessOffspring[IMAX];
 
 void inputPopulation();
 void calculateFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
-void printFitnessOf(int (& )[IMAX]);
-void print(int (& )[IMAX][JMAX]);
+void printTable(int (& )[IMAX][JMAX], int (&)[IMAX]);
 void sortByFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
 void crossOverOnePoint(int, int, int);
 void crossOver();
 void chooseBest();
 void mutation(int (& )[IMAX][JMAX]);
-
+string format(int);
 int main (){
     inputPopulation();
+    cout<<"\nFitness function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n\n";
     for(int t=0; t<4;t++){
-        cout << "\n###################";
-        cout << "\n** Generation "<< t+1 <<" **\n";
-        cout << "###################\n";
-        cout << "\n***  Parents:  ***\n";
-        print(x);
-        calculateFitnessOf(x, fitness);
-        printFitnessOf(fitness);
-        cout << "\n*   After sort:  *\n";
-        sortByFitnessOf(x, fitness);
-        print(x);
-        printFitnessOf(fitness);
+        cout << "##################################\n";
+        cout << "           Generation "<< t+1 <<"           ";
+        cout << "\n##################################\n";
+        cout << "***          Parents:          ***\n";
+        calculateFitnessOf(x, fitnessParent);
+        printTable(x, fitnessParent);
+
+        cout << "* After sort: *\n";
+        sortByFitnessOf(x, fitnessParent);
+        printTable(x, fitnessParent);
+
         crossOver();
         calculateFitnessOf(offSpring, fitnessOffspring);
 
-        cout << "\n*** Offspring: ***\n";
-        print(offSpring);
-        printFitnessOf(fitnessOffspring);
+        cout << "***         Offspring:         ***\n";
+        printTable(offSpring, fitnessOffspring);
 
-        cout << "\n*    Mutation:   *\n";
+        cout << "* Mutation: *\n";
         mutation(offSpring);
         calculateFitnessOf(offSpring, fitnessOffspring);
-        print(offSpring);
-        printFitnessOf(fitnessOffspring);
-
+        printTable(offSpring, fitnessOffspring);
 
         sortByFitnessOf(offSpring, fitnessOffspring);
-        cout << "\n*   After sort:  *\n";
-        print(offSpring);
-        printFitnessOf(fitnessOffspring);
-
+        cout << "* After sort: *\n";
+        printTable(offSpring, fitnessOffspring);
         chooseBest();
-        cout << "###################\n";
     }
     return 0;
 }
@@ -74,14 +73,20 @@ inline void inputPopulation(){
     }
 }
 
-void inline print(int (&arr)[IMAX][JMAX]){
-    cout << "   a b c d e f g h\n";
+void inline printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
+    cout << "----------------------------------\n";
+    cout << "| x | a b c d e f g h |  Fitness |\n";
+    cout << "----------------------------------\n";
     for (int i=0; i<IMAX; i++){
-        cout  << i+1 << ": ";
+        cout  << "| "<< i+1 << " | ";
         for (int j=0; j<JMAX; j++){
-            cout << arr[i][j] << " ";
+            cout << ""<<arr[i][j] << " ";
         }
-        cout << endl;
+        cout << "|";
+        //for (int i=0; i<IMAX; i++){
+            cout <<"   "<<format(fit[i])<< fit[i]<< "    |" ;
+        //}
+        cout << "\n----------------------------------\n";
     }
     cout << endl;
 }
@@ -89,16 +94,9 @@ void inline print(int (&arr)[IMAX][JMAX]){
 void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
     for (int i=0; i<IMAX; i++){
         fit[i] =((arr[i][a] + arr[i][b])
-                     -(arr[i][c] + arr[i][d])
-                     +(arr[i][e] + arr[i][f])
-                     -(arr[i][g] + arr[i][h]));
-    }
-}
-
-void printFitnessOf(int (&arr)[IMAX]){
-    cout<<"Fitness: f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n";
-    for (int i=0; i<IMAX; i++){
-        cout <<i+1<<": "<<arr[i]<<endl;
+                 -(arr[i][c] + arr[i][d])
+                 +(arr[i][e] + arr[i][f])
+                 -(arr[i][g] + arr[i][h]));
     }
 }
 
@@ -154,3 +152,13 @@ void inline mutation(int (&arr)[IMAX][JMAX]){
     }
 }
 
+string format(int val){
+    string formated = "";
+    if(val<0)
+        formated = "";
+    else if(val<10)
+        formated = "  ";
+    else if(val<100)
+        formated = " ";
+    return formated;
+}
