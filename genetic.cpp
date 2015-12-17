@@ -28,17 +28,16 @@ string format(int);
 int main (){
     inputPopulation();
     cout<<"\nFitness function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n\n";
+
     for(int t=0; t<4;t++){
         cout << "##################################\n";
         cout << "           Generation "<< t+1 <<"           ";
-        cout << "\n##################################\n";
-        cout << "***          Parents:          ***\n";
+        cout << "\n##################################\n\n";
+        cout << "***          Parent:          ***\n";
         calculateFitnessOf(x, fitnessParent);
         printTable(x, fitnessParent);
 
-        cout << "* After sort: *\n";
         sortByFitnessOf(x, fitnessParent);
-        printTable(x, fitnessParent);
 
         crossOver();
         calculateFitnessOf(offSpring, fitnessOffspring);
@@ -46,14 +45,7 @@ int main (){
         cout << "***         Offspring:         ***\n";
         printTable(offSpring, fitnessOffspring);
 
-        cout << "* Mutation: *\n";
-        mutation(offSpring);
-        calculateFitnessOf(offSpring, fitnessOffspring);
-        printTable(offSpring, fitnessOffspring);
-
         sortByFitnessOf(offSpring, fitnessOffspring);
-        cout << "* After sort: *\n";
-        printTable(offSpring, fitnessOffspring);
         chooseBest();
     }
     return 0;
@@ -83,9 +75,7 @@ void inline printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
             cout << ""<<arr[i][j] << " ";
         }
         cout << "|";
-        //for (int i=0; i<IMAX; i++){
-            cout <<"   "<<format(fit[i])<< fit[i]<< "    |" ;
-        //}
+        cout <<"   "<<format(fit[i])<< fit[i]<< "    |" ;
         cout << "\n----------------------------------\n";
     }
     cout << endl;
