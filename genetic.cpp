@@ -1,10 +1,13 @@
+
 /**
  *
  *  @author A B M RUMAN
  *
  **/
 #include <iostream>
+#include <iomanip>
 #include <cstdlib>
+#include <string>
 #include <ctime>
 using namespace std;
 #define IMAX 4
@@ -25,6 +28,8 @@ void crossOver();
 void chooseBest();
 void mutation(int (& )[IMAX][JMAX]);
 string format(int);
+string format(float);
+
 int main (){
     inputPopulation();
     cout<<"\nFitness function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n\n";
@@ -66,18 +71,38 @@ inline void inputPopulation(){
 }
 
 void inline printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
-    cout << "----------------------------------\n";
-    cout << "| x | a b c d e f g h |  Fitness |\n";
-    cout << "----------------------------------\n";
+    int total=0, minVal = 0, extraFit, extraTotal;
+    float totalProb = 0.0f, prob=0.0f, avg;
+    for (int i=0; i<IMAX; i++){
+        minVal = min(minVal, fit[i]);
+        total += fit[i];
+    }
+    //if(minVal==0) minVal++;
+    /** To prevent a negative probability **/
+    extraTotal = (minVal<0) ? abs(minVal*IMAX) : 0;
+
+    avg = 1.0f*total/IMAX;
+    cout << "------------------------------------------------\n";
+    cout << "| x | a b c d e f g h |  Fitness | Probability |\n";
+    cout << "------------------------------------------------\n";
+
     for (int i=0; i<IMAX; i++){
         cout  << "| "<< i+1 << " | ";
         for (int j=0; j<JMAX; j++){
             cout << ""<<arr[i][j] << " ";
         }
         cout << "|";
-        cout <<"   "<<format(fit[i])<< fit[i]<< "    |" ;
-        cout << "\n----------------------------------\n";
+        totalProb += prob = 1.0f*(fit[i]+abs(minVal))/abs(total+extraTotal);
+
+        cout << "     "<<format(fit[i])<< fit[i]<< "  |      "
+            << format(prob) << fixed <<setprecision(2) << prob <<"  |" ;
+        cout << "\n------------------------------------------------\n";
     }
+    cout << "|      T O T A L      |     "<< format(total) << total <<"  |      "
+        << format(totalProb) << fixed <<setprecision(2) << totalProb <<"  |";
+    cout << "\n------------------------------------------------\n";
+    cout << "|    A V E R A G E    |   "<< format(avg) << fixed <<setprecision(2)<< avg <<"  |             |";
+    cout << "\n------------------------------------------------\n";
     cout << endl;
 }
 
@@ -144,11 +169,28 @@ void inline mutation(int (&arr)[IMAX][JMAX]){
 
 string format(int val){
     string formated = "";
-    if(val<0)
+    if(val<-9)
         formated = "";
+    else if(val<0)
+        formated = " ";
     else if(val<10)
         formated = "  ";
     else if(val<100)
+        formated = " ";
+    return formated;
+}
+
+string format(float val){
+    string formated = "";
+//    if(((int) val) == val){
+//        formated = "  "+format((int) val);
+//        return formated;
+//    }
+
+    if(val<0)
+        formated = "";
+    else
+        if(val<10)
         formated = " ";
     return formated;
 }
