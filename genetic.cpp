@@ -1,4 +1,3 @@
-
 /**
  *
  *  @author A B M RUMAN
@@ -12,13 +11,14 @@
 using namespace std;
 #define IMAX 4
 #define JMAX 8
+#define GENERATION 5
 
 enum {a,b,c,d,e,f,g,h};
 int x[IMAX][JMAX];
 int offSpring[IMAX][JMAX];
 int fitnessParent[IMAX];
 int fitnessOffspring[IMAX];
-
+int mutatedPop=-1, mutatedPos=-1;
 void inputPopulation();
 void calculateFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
 void printTable(int (& )[IMAX][JMAX], int (&)[IMAX]);
@@ -32,22 +32,28 @@ string format(float);
 
 int main (){
     inputPopulation();
-    cout<<"\nFitness function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n\n";
+    cout<<"\nFitness function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n";
+    cout<<"\nMutation Marker  : *\n\n";
 
-    for(int t=0; t<4;t++){
-        cout << "##################################\n";
+    for(int t=0; t<GENERATION;t++){
+        //cout << "##################################\n";
         cout << "           Generation "<< t+1 <<"           ";
-        cout << "\n##################################\n\n";
-        cout << "***          Parent:          ***\n";
+        //cout << "\n##################################\n\n";
+        cout << "\n__________________________________\n\n\n";
+
+        cout << "----------------------------------------------------------\n";
+        cout << "|                      P A R E N T                       |\n";
         calculateFitnessOf(x, fitnessParent);
         printTable(x, fitnessParent);
-
         sortByFitnessOf(x, fitnessParent);
 
         crossOver();
-        calculateFitnessOf(offSpring, fitnessOffspring);
 
-        cout << "***         Offspring:         ***\n";
+
+        cout << "----------------------------------------------------------\n";
+        cout << "|                   O F F S P R I N G                    |\n";
+        mutation(offSpring);
+        calculateFitnessOf(offSpring, fitnessOffspring);
         printTable(offSpring, fitnessOffspring);
 
         sortByFitnessOf(offSpring, fitnessOffspring);
@@ -77,33 +83,40 @@ void inline printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
         minVal = min(minVal, fit[i]);
         total += fit[i];
     }
-    //if(minVal==0) minVal++;
+
     /** To prevent a negative probability **/
     extraTotal = (minVal<0) ? abs(minVal*IMAX) : 0;
 
     avg = 1.0f*total/IMAX;
-    cout << "------------------------------------------------\n";
-    cout << "| x | a b c d e f g h |  Fitness | Probability |\n";
-    cout << "------------------------------------------------\n";
+    cout << "----------------------------------------------------------\n";
+    cout << "|  x  | a  b  c  d  e  f  g  h  |  Fitness | Probability |\n";
+    cout << "----------------------------------------------------------\n";
 
     for (int i=0; i<IMAX; i++){
-        cout  << "| "<< i+1 << " | ";
-        for (int j=0; j<JMAX; j++){
-            cout << ""<<arr[i][j] << " ";
-        }
-        cout << "|";
-        totalProb += prob = 1.0f*(fit[i]+abs(minVal))/abs(total+extraTotal);
+        string mark = (mutatedPop==i)?"*":" ";
 
-        cout << "     "<<format(fit[i])<< fit[i]<< "  |      "
-            << format(prob) << fixed <<setprecision(2) << prob <<"  |" ;
-        cout << "\n------------------------------------------------\n";
+        cout  << "|  " << i+1 << mark << " | ";
+        for (int j=0; j<JMAX; j++){
+            mark = (mutatedPop==i && mutatedPos==j)?"*":" ";
+            cout << ""<<arr[i][j] << mark << " ";
+        }
+
+        cout << "|";
+        totalProb += prob = (1.0f*fit[i]+abs(minVal))/abs(total+extraTotal);
+
+        cout << "     "<<format(fit[i])<< fit[i]<< "  |    "
+            << format(prob) << fixed <<setprecision(4) << prob <<"  |" ;
+        cout << "\n----------------------------------------------------------\n";
     }
-    cout << "|      T O T A L      |     "<< format(total) << total <<"  |      "
+    mutatedPop=-1;
+    mutatedPos=-1;
+
+    cout << "|           T O T A L           |     "<< format(total) << total <<"  |      "
         << format(totalProb) << fixed <<setprecision(2) << totalProb <<"  |";
-    cout << "\n------------------------------------------------\n";
-    cout << "|    A V E R A G E    |   "<< format(avg) << fixed <<setprecision(2)<< avg <<"  |             |";
-    cout << "\n------------------------------------------------\n";
-    cout << endl;
+    cout << "\n----------------------------------------------------------\n";
+    cout << "|         A V E R A G E         |   "<< format(avg) << fixed <<setprecision(2)<< avg <<"  |             |";
+    cout << "\n----------------------------------------------------------\n";
+    cout << endl << endl;
 }
 
 void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
@@ -161,10 +174,9 @@ void chooseBest(){
 }
 
 void inline mutation(int (&arr)[IMAX][JMAX]){
-    for (int i=0; i<IMAX; i++){
-        arr[i][randNum(0,JMAX)] = randNum(0,9);
-
-    }
+    mutatedPop = randNum(0,IMAX);
+    mutatedPos = randNum(0,JMAX);
+   arr[mutatedPop][mutatedPos] = randNum(0,9);
 }
 
 string format(int val){
@@ -182,10 +194,6 @@ string format(int val){
 
 string format(float val){
     string formated = "";
-//    if(((int) val) == val){
-//        formated = "  "+format((int) val);
-//        return formated;
-//    }
 
     if(val<0)
         formated = "";
