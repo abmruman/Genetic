@@ -1,24 +1,27 @@
 /**
  *
+ *  @name Genetic Algorithm (One point cross-over with mutation)
  *  @author A B M RUMAN
  *
  **/
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
-#include <string>
-#include <ctime>
 using namespace std;
-#define IMAX 4
-#define JMAX 8
-#define GENERATION 5
+#define IMAX 4//population input size
+#define JMAX 8//Chromosome size
+#define GENERATION 5//Number of generations to compute
+#define MID JMAX/2
+#define CROSSOVER_POINT MID//The point of crossover
 
 enum {a,b,c,d,e,f,g,h};
+
 int x[IMAX][JMAX];
 int offSpring[IMAX][JMAX];
 int fitnessParent[IMAX];
 int fitnessOffspring[IMAX];
 int mutatedPop=-1, mutatedPos=-1;
+
 void inputPopulation();
 void calculateFitnessOf(int (& )[IMAX][JMAX], int (& )[IMAX]);
 void printTable(int (& )[IMAX][JMAX], int (&)[IMAX]);
@@ -32,7 +35,10 @@ string format(float);
 
 int main (){
     inputPopulation();
-    cout<<"\nFitness function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)\n";
+    cout<<"\nFitness Function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)";
+    cout<<"\nPopulation Size  : " << IMAX;
+    cout<<"\nChromosome Size  : " << JMAX;
+    cout<<"\nGeneration Size  : " << GENERATION;
     cout<<"\nMutation Marker  : *\n\n";
 
     for(int t=0; t<GENERATION;t++){
@@ -42,8 +48,8 @@ int main (){
         cout << "----------------------------------------------------------\n";
         cout << "|                      P A R E N T                       |\n";
         calculateFitnessOf(x, fitnessParent);
-        printTable(x, fitnessParent);
         sortByFitnessOf(x, fitnessParent);
+        printTable(x, fitnessParent);
 
         crossOver();
 
@@ -149,20 +155,22 @@ void sortByFitnessOf(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
 }
 
 void crossOver(){
-    crossOverOnePoint(0, 1, 4);
-    crossOverOnePoint(2, 3, 4);
+    for(int i=1; i<IMAX; i+=2){
+        crossOverOnePoint(i-1, i, CROSSOVER_POINT);
+    }
 }
 
 inline void mutation(int (&arr)[IMAX][JMAX]){
     mutatedPop = randNum(0,IMAX);
     mutatedPos = randNum(0,JMAX);
-   arr[mutatedPop][mutatedPos] = randNum(0,9);
+    arr[mutatedPop][mutatedPos] = randNum(0,9);
 }
 
 void chooseBest(){
     for (int j=0; j<JMAX; j++){
-        x[2][j] = offSpring[0][j];
-        x[3][j] = offSpring[1][j];
+        for(int i=IMAX/2, a=0; i<IMAX; i++, a++){
+            x[i][j] = offSpring[a][j];
+        }
     }
 }
 
