@@ -36,9 +36,7 @@ int main (){
     cout<<"\nMutation Marker  : *\n\n";
 
     for(int t=0; t<GENERATION;t++){
-        //cout << "##################################\n";
         cout << "           Generation "<< t+1 <<"           ";
-        //cout << "\n##################################\n\n";
         cout << "\n__________________________________\n\n\n";
 
         cout << "----------------------------------------------------------\n";
@@ -64,7 +62,7 @@ int main (){
 
 inline int randNum(int min, int max){
 	double d = rand()/static_cast<double>(RAND_MAX);
-    int i = min + static_cast<int>( d * (max - min) );
+	int i = min + static_cast<int>(d * (max - min));
     return i;
 }
 
@@ -76,7 +74,16 @@ inline void inputPopulation(){
     }
 }
 
-void inline printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
+void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
+    for (int i=0; i<IMAX; i++){
+        fit[i] =((arr[i][a] + arr[i][b])
+                 -(arr[i][c] + arr[i][d])
+                 +(arr[i][e] + arr[i][f])
+                 -(arr[i][g] + arr[i][h]));
+    }
+}
+
+void printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
     int total=0, minVal = 0, extraFit, extraTotal;
     float totalProb = 0.0f, prob=0.0f, avg;
     for (int i=0; i<IMAX; i++){
@@ -119,15 +126,6 @@ void inline printTable(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
     cout << endl << endl;
 }
 
-void calculateFitnessOf(int (&arr)[IMAX][JMAX], int (& fit)[IMAX]){
-    for (int i=0; i<IMAX; i++){
-        fit[i] =((arr[i][a] + arr[i][b])
-                 -(arr[i][c] + arr[i][d])
-                 +(arr[i][e] + arr[i][f])
-                 -(arr[i][g] + arr[i][h]));
-    }
-}
-
 void sortByFitnessOf(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
     int temp, tempArr[JMAX];
     for(int i=0; i<IMAX; i++){
@@ -150,20 +148,15 @@ void sortByFitnessOf(int (&arr)[IMAX][JMAX], int (&fit)[IMAX]){
     }
 }
 
-void crossOverOnePoint(int a, int b, int pointer){
-    for (int i= 0; i<pointer; i++){
-        offSpring[a][i] = x[a][i];
-        offSpring[b][i] = x[b][i];
-    }
-    for (int i= pointer; i<JMAX; i++){
-        offSpring[b][i] = x[a][i];
-        offSpring[a][i] = x[b][i];
-    }
-}
-
 void crossOver(){
     crossOverOnePoint(0, 1, 4);
     crossOverOnePoint(2, 3, 4);
+}
+
+inline void mutation(int (&arr)[IMAX][JMAX]){
+    mutatedPop = randNum(0,IMAX);
+    mutatedPos = randNum(0,JMAX);
+   arr[mutatedPop][mutatedPos] = randNum(0,9);
 }
 
 void chooseBest(){
@@ -173,10 +166,15 @@ void chooseBest(){
     }
 }
 
-void inline mutation(int (&arr)[IMAX][JMAX]){
-    mutatedPop = randNum(0,IMAX);
-    mutatedPos = randNum(0,JMAX);
-   arr[mutatedPop][mutatedPos] = randNum(0,9);
+void crossOverOnePoint(int a, int b, int pointer){
+    for (int i= 0; i<pointer; i++){
+        offSpring[a][i] = x[a][i];
+        offSpring[b][i] = x[b][i];
+    }
+    for (int i= pointer; i<JMAX; i++){
+        offSpring[b][i] = x[a][i];
+        offSpring[a][i] = x[b][i];
+    }
 }
 
 string format(int val){
