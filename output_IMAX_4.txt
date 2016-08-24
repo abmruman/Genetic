@@ -1,8 +1,7 @@
 
 Fitness Function : f(x) = (a+b)-(c+d)+(e+f)-(g+h)
 Population Size  : 4
-Chromosome Size  : 8
-Generation Size  : 5
+Chromosome Size  : 4
 Mutation Marker  : *
 
            Generation 1           
